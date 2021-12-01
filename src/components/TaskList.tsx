@@ -3,7 +3,6 @@ import { useState } from 'react'
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
-
 interface Task {
   id: number;
   title: string;
@@ -11,21 +10,31 @@ interface Task {
 }
 
 export function TaskList() {
+ 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
-
+  
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if(!newTaskTitle) return;
+    setTasks([...tasks,{id: tasks.length + 1, title: newTaskTitle, isComplete:false}])
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const changeIsComplete = tasks.map(task => task.id === id ? {
+      ...task,
+      isComplete: !task.isComplete
+    } : task) 
+    setTasks(changeIsComplete)
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const filteredTaks = tasks.filter(task => task.id !== id)
+    setTasks(filteredTaks)
   }
-
+console.log(newTaskTitle)
   return (
     <section className="task-list container">
       <header>
@@ -49,7 +58,7 @@ export function TaskList() {
           {tasks.map(task => (
             <li key={task.id}>
               <div className={task.isComplete ? 'completed' : ''} data-testid="task" >
-                <label className="checkbox-container">
+                <label className={`${task.id}`}>
                   <input 
                     type="checkbox"
                     readOnly
